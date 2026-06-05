@@ -2,7 +2,12 @@ package com.cribup.management.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InquiryManagementDTO {
+	@JsonProperty("inquiryId")
 	private Long id;
 	private String fullName;
 	private String email;

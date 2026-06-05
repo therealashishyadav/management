@@ -41,7 +41,9 @@ public class ManagementService {
         stats.setTotalTenants(users.stream().filter(u -> "USER".equals(u.getRole())).count());
 
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
-        stats.setMonthlyInquiries(inquiries.stream().filter(i -> i.getCreatedAt().isAfter(oneMonthAgo)).count());
+        stats.setMonthlyInquiries(inquiries.stream()
+                .filter(i -> i.getCreatedAt() != null && i.getCreatedAt().isAfter(oneMonthAgo))
+                .count());
 
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
         stats.setWeeklySignups(users.stream().filter(u -> u.getCreatedAt().isAfter(oneWeekAgo)).count());
