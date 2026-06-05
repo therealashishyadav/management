@@ -1,18 +1,30 @@
 package com.cribup.management.service;
 
-import com.cribup.management.client.*;
-import com.cribup.management.dto.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.cribup.management.client.AccountServiceClient;
+import com.cribup.management.client.InquiryServiceClient;
+import com.cribup.management.client.PgServiceClient;
+import com.cribup.management.client.TenantServiceClient;
+import com.cribup.management.dto.ChartDataDTO;
+import com.cribup.management.dto.DashboardStatsDTO;
+import com.cribup.management.dto.InquiryManagementDTO;
+import com.cribup.management.dto.PgListingManagementDTO;
+import com.cribup.management.dto.PlatformSettingsDTO;
+import com.cribup.management.dto.RevenueSummaryDTO;
+import com.cribup.management.dto.UserManagementDTO;
 
 @Service
 public class ManagementService {
@@ -32,7 +44,7 @@ public class ManagementService {
     public DashboardStatsDTO getDashboardStats() {
         DashboardStatsDTO stats = new DashboardStatsDTO();
         List<UserManagementDTO> users = accountClient.getAllUsers();
-        List<PgListingManagementDTO> pgs = pgClient.getAllListings();
+        List<PgListingManagementDTO> pgs = pgClient.getAllListings(0, 1000).getContent();
         List<InquiryManagementDTO> inquiries = inquiryClient.getAllInquiries();
 
         stats.setTotalPGs((long) pgs.size());
@@ -67,12 +79,14 @@ public class ManagementService {
                             || u.getPhone().contains(search))
                     .collect(Collectors.toList());
         }
+        List<PgListingManagementDTO> allListings = pgClient.getAllListings(0, 1000).getContent();
+        List<InquiryManagementDTO> allInquiries = inquiryClient.getAllInquiries();
         for (UserManagementDTO user : users) {
             if ("OWNER".equals(user.getRole())) {
-                user.setListedPGCount((long) pgClient.getAllListings().stream()
+                user.setListedPGCount((long) allListings.stream()
                         .filter(p -> p.getOwnerId().equals(user.getId())).count());
             }
-            user.setInquiryCount((long) inquiryClient.getAllInquiries().stream()
+            user.setInquiryCount((long) allInquiries.stream()
                     .filter(i -> i.getEmail().equals(user.getEmail())).count());
         }
         int start = (int) pageable.getOffset();
@@ -89,7 +103,7 @@ public class ManagementService {
     }
 
     public Page<PgListingManagementDTO> getAllListings(Pageable pageable, String city, String occupancyType) {
-        List<PgListingManagementDTO> pgs = pgClient.getAllListings();
+        List<PgListingManagementDTO> pgs = pgClient.getAllListings(0, 1000).getContent();
         if (city != null && !city.isEmpty()) {
             pgs = pgs.stream().filter(p -> city.equalsIgnoreCase(p.getCity())).collect(Collectors.toList());
         }
@@ -179,7 +193,7 @@ public class ManagementService {
     }
 
     public List<ChartDataDTO> getCityDistribution() {
-        List<PgListingManagementDTO> pgs = pgClient.getAllListings();
+        List<PgListingManagementDTO> pgs = pgClient.getAllListings(0, 1000).getContent();
         Map<String, Long> cityCount = pgs.stream()
                 .collect(Collectors.groupingBy(PgListingManagementDTO::getCity, Collectors.counting()));
         return cityCount.entrySet().stream()

@@ -1,15 +1,18 @@
 package com.cribup.management.client;
 
-import com.cribup.management.dto.UserManagementDTO;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
+import com.cribup.management.dto.UserManagementDTO;
 
 @FeignClient(name = "ACCOUNT-SERVICE", url = "${services.account-service.url}")
 public interface AccountServiceClient {
 
-	@GetMapping("/api/v1/user/all")
+	@GetMapping("/api/v1/user/")
 	List<UserManagementDTO> getAllUsers();
 
 	@PutMapping("/api/v1/user/{id}/activate")
