@@ -118,11 +118,23 @@ public class ManagementService {
     }
 
     public void verifyListing(Long id) {
-        pgClient.verifyListing(id);
+        try {
+            pgClient.verifyListing(id);
+        } catch (feign.FeignException e) {
+            org.slf4j.LoggerFactory.getLogger(ManagementService.class)
+                    .error("Failed to verify listing id {} via PgServiceClient: status={}, message={}", id, e.status(), e.getMessage());
+            throw e;
+        }
     }
 
     public void deleteListing(Long id) {
-        pgClient.deleteListing(id);
+        try {
+            pgClient.deleteListing(id);
+        } catch (feign.FeignException e) {
+            org.slf4j.LoggerFactory.getLogger(ManagementService.class)
+                    .error("Failed to delete listing id {} via PgServiceClient: status={}, message={}", id, e.status(), e.getMessage());
+            throw e;
+        }
     }
 
     public Page<InquiryManagementDTO> getAllInquiries(Pageable pageable, String search, String location, String inquiryType) {
