@@ -58,7 +58,9 @@ public class ManagementService {
                 .count());
 
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-        stats.setWeeklySignups(users.stream().filter(u -> u.getCreatedAt().isAfter(oneWeekAgo)).count());
+        stats.setWeeklySignups(users.stream()
+                .filter(u -> u.getCreatedAt() != null && u.getCreatedAt().isAfter(oneWeekAgo))
+                .count());
 
         stats.setTotalFinderFeesCollected(new BigDecimal("125000"));
         stats.setPendingFinderFees(new BigDecimal("45000"));
