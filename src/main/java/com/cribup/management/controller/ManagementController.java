@@ -1,15 +1,31 @@
 package com.cribup.management.controller;
 
-import com.cribup.management.dto.*;
-import com.cribup.management.service.ManagementService;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.cribup.management.dto.ChartDataDTO;
+import com.cribup.management.dto.DashboardStatsDTO;
+import com.cribup.management.dto.InquiryManagementDTO;
+import com.cribup.management.dto.PgListingManagementDTO;
+import com.cribup.management.dto.PlatformSettingsDTO;
+import com.cribup.management.dto.RevenueSummaryDTO;
+import com.cribup.management.dto.UserManagementDTO;
+import com.cribup.management.service.ManagementService;
 
 @RestController
 @RequestMapping("/api/management")
@@ -21,6 +37,11 @@ public class ManagementController {
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardStatsDTO> getDashboardStats() {
         return ResponseEntity.ok(managementService.getDashboardStats());
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> getHealth() {
+        return ResponseEntity.ok(Map.of("status", "UP"));
     }
 
     @GetMapping("/users")

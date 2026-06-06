@@ -3,7 +3,6 @@ package com.cribup.management.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -62,8 +61,8 @@ public class ManagementService {
                 .filter(u -> u.getCreatedAt() != null && u.getCreatedAt().isAfter(oneWeekAgo))
                 .count());
 
-        stats.setTotalFinderFeesCollected(new BigDecimal("125000"));
-        stats.setPendingFinderFees(new BigDecimal("45000"));
+        stats.setTotalFinderFeesCollected(BigDecimal.ZERO);
+        stats.setPendingFinderFees(BigDecimal.ZERO);
         stats.setPlatformHealthy(true);
         stats.setLastUpdated(LocalDateTime.now());
 
@@ -177,16 +176,11 @@ public class ManagementService {
 
     public RevenueSummaryDTO getRevenueSummary() {
         RevenueSummaryDTO summary = new RevenueSummaryDTO();
-        summary.setTotalCollected(new BigDecimal("125000"));
-        summary.setTotalPending(new BigDecimal("45000"));
-        Map<YearMonth, BigDecimal> monthly = new LinkedHashMap<>();
-        monthly.put(YearMonth.of(2025, 1), new BigDecimal("25000"));
-        monthly.put(YearMonth.of(2025, 2), new BigDecimal("30000"));
-        monthly.put(YearMonth.of(2025, 3), new BigDecimal("35000"));
-        monthly.put(YearMonth.of(2025, 4), new BigDecimal("40000"));
-        summary.setMonthlyRevenue(monthly);
-        summary.setTotalPaidOwners(12L);
-        summary.setTotalPendingOwners(5L);
+        summary.setTotalCollected(BigDecimal.ZERO);
+        summary.setTotalPending(BigDecimal.ZERO);
+        summary.setMonthlyRevenue(Map.of());
+        summary.setTotalPaidOwners(0L);
+        summary.setTotalPendingOwners(0L);
         return summary;
     }
 
@@ -206,6 +200,7 @@ public class ManagementService {
     public List<ChartDataDTO> getMonthlyGrowth() {
         List<UserManagementDTO> users = accountClient.getAllUsers();
         Map<YearMonth, Long> signups = users.stream()
+                .filter(u -> u.getCreatedAt() != null)
                 .collect(Collectors.groupingBy(u -> YearMonth.from(u.getCreatedAt()), Collectors.counting()));
         return signups.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
