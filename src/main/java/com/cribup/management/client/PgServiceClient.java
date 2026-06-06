@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cribup.management.config.FeignClientConfig;
 import com.cribup.management.dto.PageResponse;
 import com.cribup.management.dto.PgListingManagementDTO;
 
-@FeignClient(name = "ADD-PG-SERVICE", url = "${services.add-pg-service.url}")
+@FeignClient(name = "ADD-PG-SERVICE", url = "${services.add-pg-service.url}", configuration = FeignClientConfig.class)
 public interface PgServiceClient {
 
 	@GetMapping("/api/pg-listings")

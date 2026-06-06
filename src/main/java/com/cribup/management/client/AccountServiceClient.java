@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import com.cribup.management.config.FeignClientConfig;
 import com.cribup.management.dto.UserManagementDTO;
 
-@FeignClient(name = "ACCOUNT-SERVICE", url = "${services.account-service.url}")
+@FeignClient(name = "ACCOUNT-SERVICE", url = "${services.account-service.url}", configuration = FeignClientConfig.class)
 public interface AccountServiceClient {
 
 	@GetMapping("/api/v1/user/all")
